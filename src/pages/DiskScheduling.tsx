@@ -42,7 +42,7 @@ const DiskScheduling: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Main Content */}
-      <main className="flex-1 w-full pt-20">
+      <main className="flex-1 w-full pt-10">
         <div className="w-full max-w-7xl mx-auto px-4">
           <div className="flex flex-col lg:flex-row gap-15">
             <div className="w-full lg:w-[370px] lg:flex-shrink-0">

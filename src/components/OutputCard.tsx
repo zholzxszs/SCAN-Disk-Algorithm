@@ -10,7 +10,7 @@ interface OutputCardProps {
 
 const OutputCard = ({ output }: OutputCardProps) => {
   return (
-    <div className="relative min-w-[825px] min-h-[575px] bg-white rounded-[10px] shadow-[4px_4px_10px_rgba(0,0,0,0.25)] p-6">
+    <div className="relative min-w-[825px] min-h-[625px] bg-white rounded-[10px] shadow-[4px_4px_10px_rgba(0,0,0,0.25)] p-6">
       <h2 className="text-2xl font-bold text-black mb-6 font-poppins">Output</h2>
 
       {output ? (
@@ -27,7 +27,7 @@ const OutputCard = ({ output }: OutputCardProps) => {
           </div>
 
           {/* Seek Sequence */}
-          <div className="mb-15">
+          <div className="mb-10">
             <p className="text-sm text-black font-poppins">
               <span className="font-medium">Seek Sequence</span>{" "}
               <span className="ml-2">
