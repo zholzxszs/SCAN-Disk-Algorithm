@@ -23,7 +23,85 @@ const InputCard = ({
   setDiskSize,
   onSolve,
 }: InputCardProps) => {
-  const [algorithm, setAlgorithm] = useState("SCAN");
+  const [errors, setErrors] = useState({
+    requests: "",
+    head: "",
+    diskSize: ""
+  });
+
+  const validateRequests = (value: string) => {
+    if (value.trim() === "") {
+      setErrors(prev => ({ ...prev, requests: "" }));
+      return true;
+    }
+    
+    const numbers = value.split(" ").filter(item => item !== "");
+    const hasInvalid = numbers.some(num => {
+      const number = parseInt(num);
+      return isNaN(number) || number < 1 || !Number.isInteger(number);
+    });
+    
+    if (hasInvalid) {
+      setErrors(prev => ({ ...prev, requests: "Requests must be integers ≥ 1 or empty" }));
+      return false;
+    }
+    
+    setErrors(prev => ({ ...prev, requests: "" }));
+    return true;
+  };
+
+  const validateHead = (value: string) => {
+    const number = parseInt(value);
+    if (value === "" || isNaN(number) || number < 0 || !Number.isInteger(number)) {
+      setErrors(prev => ({ ...prev, head: "Head position must be a non-negative integer" }));
+      return false;
+    }
+    setErrors(prev => ({ ...prev, head: "" }));
+    return true;
+  };
+
+  const validateDiskSize = (value: string) => {
+    const number = parseInt(value);
+    if (value === "" || isNaN(number) || number <= 0 || !Number.isInteger(number)) {
+      setErrors(prev => ({ ...prev, diskSize: "Disk size must be an integer greater than 0" }));
+      return false;
+    }
+    setErrors(prev => ({ ...prev, diskSize: "" }));
+    return true;
+  };
+
+  const handleRequestsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setRequests(value);
+    validateRequests(value);
+  };
+
+  const handleHeadChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setHead(value);
+    validateHead(value);
+  };
+
+  const handleDiskSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setDiskSize(value);
+    validateDiskSize(value);
+  };
+
+  const handleSolve = () => {
+    const isRequestsValid = validateRequests(requests);
+    const isHeadValid = validateHead(head);
+    const isDiskSizeValid = validateDiskSize(diskSize);
+
+    if (isRequestsValid && isHeadValid && isDiskSizeValid) {
+      onSolve();
+    }
+  };
+
+  const isSolveDisabled = () => {
+    return errors.requests !== "" || errors.head !== "" || errors.diskSize !== "" || 
+           head === "" || diskSize === "";
+  };
 
   return (
     <div className="relative max-w-[370px] bg-white shadow-[4px_4px_10px_0px_rgba(0,0,0,0.25)] rounded-[10px] p-6">
@@ -35,31 +113,28 @@ const InputCard = ({
         <label className="block text-sm font-medium text-black mb-1 font-poppins">
           Algorithm
         </label>
-        <select
-          value={algorithm}
-          onChange={(e) => setAlgorithm(e.target.value)}
-          className="w-full border border-neutral-400 rounded-md px-3 py-2 text-sm font-poppins focus:outline-none focus:ring-2 focus:ring-green-700 opacity-50"
-          disabled
-        >
-          <option value="SCAN">SCAN</option>
-          <option value="SSTF">SSTF</option>
-          <option value="LOOK">LOOK</option>
-          <option value="C-LOOK">C-LOOK</option>
-        </select>
+        <div className="w-full border border-neutral-400 rounded-md px-3 py-2 text-sm font-poppins bg-neutral-100 text-neutral-600">
+          SCAN
+        </div>
       </div>
 
       {/* Disk Request */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-black mb-1 font-poppins">
-          Disk Request / Queue
+          Disk Request / Queue (separated by spaces)
         </label>
         <input
           type="text"
           value={requests}
-          onChange={(e) => setRequests(e.target.value)}
+          onChange={handleRequestsChange}
           placeholder="e.g. 82 170 43 140 24 16 190"
-          className="w-full border border-neutral-400 rounded-md px-3 py-2 text-sm font-poppins focus:outline-none focus:ring-2 focus:ring-green-700"
+          className={`w-full border rounded-md px-3 py-2 text-sm font-poppins focus:outline-none focus:ring-2 focus:ring-green-700 ${
+            errors.requests ? "border-red-500" : "border-neutral-400"
+          }`}
         />
+        {errors.requests && (
+          <p className="text-red-500 text-xs mt-1 font-poppins">{errors.requests}</p>
+        )}
       </div>
 
       {/* Initial Head Position */}
@@ -70,10 +145,17 @@ const InputCard = ({
         <input
           type="number"
           value={head}
-          onChange={(e) => setHead(e.target.value)}
+          onChange={handleHeadChange}
           placeholder="e.g. 50"
-          className="w-full border border-neutral-400 rounded-md px-3 py-2 text-sm font-poppins focus:outline-none focus:ring-2 focus:ring-green-700"
+          min="0"
+          step="1"
+          className={`w-full border rounded-md px-3 py-2 text-sm font-poppins focus:outline-none focus:ring-2 focus:ring-green-700 ${
+            errors.head ? "border-red-500" : "border-neutral-400"
+          }`}
         />
+        {errors.head && (
+          <p className="text-red-500 text-xs mt-1 font-poppins">{errors.head}</p>
+        )}
       </div>
 
       {/* Direction */}
@@ -99,16 +181,28 @@ const InputCard = ({
         <input
           type="number"
           value={diskSize}
-          onChange={(e) => setDiskSize(e.target.value)}
+          onChange={handleDiskSizeChange}
           placeholder="e.g. 199"
-          className="w-full border border-neutral-400 rounded-md px-3 py-2 text-sm font-poppins focus:outline-none focus:ring-2 focus:ring-green-700"
+          min="1"
+          step="1"
+          className={`w-full border rounded-md px-3 py-2 text-sm font-poppins focus:outline-none focus:ring-2 focus:ring-green-700 ${
+            errors.diskSize ? "border-red-500" : "border-neutral-400"
+          }`}
         />
+        {errors.diskSize && (
+          <p className="text-red-500 text-xs mt-1 font-poppins">{errors.diskSize}</p>
+        )}
       </div>
 
       {/* Solve Button */}
       <button
-        onClick={onSolve}
-        className="w-[150px] bg-green-700 cursor-pointer hover:bg-green-800 text-white font-bold py-2 rounded-lg transition-colors font-poppins text-base"
+        onClick={handleSolve}
+        disabled={isSolveDisabled()}
+        className={`w-[150px] font-bold py-2 rounded-lg transition-colors font-poppins text-base ${
+          isSolveDisabled() 
+            ? "bg-gray-400 cursor-not-allowed text-gray-200" 
+            : "bg-green-700 cursor-pointer hover:bg-green-800 text-white"
+        }`}
       >
         SOLVE
       </button>
