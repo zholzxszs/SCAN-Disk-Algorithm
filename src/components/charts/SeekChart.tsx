@@ -2,32 +2,33 @@ import React from "react";
 
 interface SeekChartProps {
   sequence: number[];
+  diskSize: number;
 }
 
-const SeekChart: React.FC<SeekChartProps> = ({ sequence }) => {
+const SeekChart: React.FC<SeekChartProps> = ({ sequence, diskSize }) => {
   if (!sequence || sequence.length === 0) {
     return <div>No seek sequence provided.</div>;
   }
 
-  // Sorted unique track positions for X-axis
-  const sortedTracks = Array.from(new Set(sequence)).sort((a, b) => a - b);
-
+  // Include 0 and diskSize in the tracks to always show them
+  const allTracks = Array.from(new Set([0, ...sequence, diskSize])).sort((a, b) => a - b);
+  
   // Chart layout
   const baseWidth = 750;
-  const minWidthPerTrack = 60; // More tracks = wider chart automatically
-  const width = Math.max(baseWidth, sortedTracks.length * minWidthPerTrack);
+  const minWidthPerTrack = 60;
+  const width = Math.max(baseWidth, allTracks.length * minWidthPerTrack);
   const baseHeight = 400;
-  const minHeightPerStep = 50; // More steps = taller chart
+  const minHeightPerStep = 50;
   const height = Math.max(baseHeight, sequence.length * minHeightPerStep);
   const padding = 60;
 
-  const stepHeight = minHeightPerStep; // Fixed step height
+  const stepHeight = minHeightPerStep;
   const usableWidth = width - padding * 2;
 
-  // Map track → X coordinate (based on sorted track order)
+  // Map track → X coordinate (based on all tracks including 0 and diskSize)
   const trackToX = (track: number) => {
-    const index = sortedTracks.indexOf(track);
-    return padding + (index / (sortedTracks.length - 1)) * usableWidth;
+    const index = allTracks.indexOf(track);
+    return padding + (index / (allTracks.length - 1)) * usableWidth;
   };
 
   // Map step → Y coordinate (based on order of access)
@@ -40,6 +41,29 @@ const SeekChart: React.FC<SeekChartProps> = ({ sequence }) => {
     track,
     step: i,
   }));
+
+  // Function to draw arrowhead
+  const drawArrowhead = (x: number, y: number, angle: number) => {
+    const size = 8;
+    const radians = (angle * Math.PI) / 180;
+    
+    const points = [
+      [x, y],
+      [x - size * Math.cos(radians - Math.PI/6), y - size * Math.sin(radians - Math.PI/6)],
+      [x - size * Math.cos(radians + Math.PI/6), y - size * Math.sin(radians + Math.PI/6)]
+    ];
+    
+    return points.map(p => p.join(",")).join(" ");
+  };
+
+  // Calculate angles for arrows between points
+  const getArrowAngle = (currentPoint: typeof points[0], nextPoint: typeof points[0] | null) => {
+    if (!nextPoint) return 0; // Last point, no arrow
+    
+    const dx = nextPoint.x - currentPoint.x;
+    const dy = nextPoint.y - currentPoint.y;
+    return (Math.atan2(dy, dx) * 180) / Math.PI;
+  };
 
   return (
     <div
@@ -69,8 +93,8 @@ const SeekChart: React.FC<SeekChartProps> = ({ sequence }) => {
           strokeWidth={1.5}
         />
 
-        {/* X-axis Labels (sorted ascending track numbers) */}
-        {sortedTracks.map((track) => {
+        {/* X-axis Labels (all tracks including 0 and diskSize) */}
+        {allTracks.map((track) => {
           const x = trackToX(track);
           return (
             <text
@@ -94,20 +118,45 @@ const SeekChart: React.FC<SeekChartProps> = ({ sequence }) => {
           points={points.map((p) => `${p.x},${p.y}`).join(" ")}
         />
 
-        {/* Points + labels for each access */}
-        {points.map((p, i) => (
-          <g key={i}>
-            <circle cx={p.x} cy={p.y} r={5} fill="#007bff" />
-            <text
-              x={p.x + 8}
-              y={p.y + 4}
-              fontSize="12"
-              fill="#111"
-            >
-              {`[${p.track}]`}
-            </text>
-          </g>
-        ))}
+        {/* Arrows at each point (except the last one) */}
+        {points.map((point, i) => {
+          if (i < points.length - 1) {
+            const nextPoint = points[i + 1];
+            const angle = getArrowAngle(point, nextPoint);
+            
+            return (
+              <g key={i}>
+                {/* Arrowhead */}
+                <polygon
+                  points={drawArrowhead(nextPoint.x, nextPoint.y, angle)}
+                  fill="#007bff"
+                />
+                {/* Step number label */}
+                <text
+                  x={point.x + 8}
+                  y={point.y + 4}
+                  fontSize="12"
+                  fill="#111"
+                >
+                  {`[${point.track}]`}
+                </text>
+              </g>
+            );
+          } else {
+            // Last point - just show the label without arrow
+            return (
+              <text
+                key={i}
+                x={point.x + 8}
+                y={point.y + 4}
+                fontSize="12"
+                fill="#111"
+              >
+                {`[${point.track}]`}
+              </text>
+            );
+          }
+        })}
       </svg>
     </div>
   );
