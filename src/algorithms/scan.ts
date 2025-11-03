@@ -8,10 +8,6 @@ export interface ScanOutput {
   stepsDetailed: string;
 }
 
-/**
- * SCAN Disk Scheduling Algorithm (Elevator Algorithm)
- * Debug version with console logs.
- */
 export function computeSCAN(
   requests: number[],
   headPos: number,
