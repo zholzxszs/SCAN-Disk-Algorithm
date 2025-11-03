@@ -17,17 +17,18 @@ const DiskScheduling: React.FC = () => {
   const [diskSize, setDiskSize] = useState<string>("");
 
   const handleSolve = () => {
-    // Handle both comma and space separated numbers
+    // Handle only whitespace separated numbers
     const reqs = requests
-      .split(/[\s,]+/)  // split by one or more spaces or commas
+      .split(/\s+/)  // split by one or more whitespace characters
       .map((r) => parseInt(r.trim()))
       .filter((r) => !isNaN(r));
 
     const headPos = parseInt(head);
     const maxCylinder = parseInt(diskSize) || 199;
 
-    if (!reqs.length || isNaN(headPos)) {
-      alert("Please enter valid inputs");
+    // Remove the check for empty requests - allow empty queue
+    if (isNaN(headPos)) {
+      alert("Please enter valid head position");
       return;
     }
 
