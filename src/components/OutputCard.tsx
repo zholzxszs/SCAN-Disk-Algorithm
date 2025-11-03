@@ -18,10 +18,10 @@ const OutputCard = ({ output }: OutputCardProps) => {
           {/* Total Seek Time */}
           <div className="mb-4 font-poppins text-black">
             <div className="flex text-sm">
-              <span className="font-medium">Total Seek Time</span>
+              <span className="font-medium">Total Overhead Movement</span>
               <span className="ml-2">= {output.steps}</span>
             </div>
-            <div className="flex mt-1 ml-[108px]">
+            <div className="flex mt-1 ml-[174px]">
               <span className="text-sm font-bold">= {output.totalSeekTime}</span>
             </div>
           </div>

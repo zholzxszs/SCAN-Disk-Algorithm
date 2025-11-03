@@ -18,12 +18,6 @@ export function computeSCAN(
   direction: ScanDirection,
   maxCylinder: number
 ): ScanOutput {
-  console.log("=== SCAN DEBUG START ===");
-  console.log("Input Requests:", requests);
-  console.log("Initial Head Position:", headPos);
-  console.log("Initial Direction:", direction);
-  console.log("Max Cylinder:", maxCylinder);
-  console.log("----------------------------");
 
   const left: number[] = [];
   const right: number[] = [];

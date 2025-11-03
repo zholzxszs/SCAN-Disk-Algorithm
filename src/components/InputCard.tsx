@@ -38,7 +38,8 @@ const InputCard = ({
         <select
           value={algorithm}
           onChange={(e) => setAlgorithm(e.target.value)}
-          className="w-full border border-neutral-400 rounded-md px-3 py-2 text-sm font-poppins focus:outline-none focus:ring-2 focus:ring-green-700"
+          className="w-full border border-neutral-400 rounded-md px-3 py-2 text-sm font-poppins focus:outline-none focus:ring-2 focus:ring-green-700 opacity-50"
+          disabled
         >
           <option value="SCAN">SCAN</option>
           <option value="SSTF">SSTF</option>
