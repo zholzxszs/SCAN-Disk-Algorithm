@@ -29,13 +29,15 @@ const InputCard = ({
     diskSize: ""
   });
 
-  const validateRequests = (value: string) => {
+  const validateRequests = (value: string, currentDiskSize: string = diskSize) => {
     if (value.trim() === "") {
       setErrors(prev => ({ ...prev, requests: "" }));
       return true;
     }
     
     const numbers = value.split(" ").filter(item => item !== "");
+    const diskSizeNum = parseInt(currentDiskSize);
+    
     const hasInvalid = numbers.some(num => {
       const number = parseInt(num);
       return isNaN(number) || number < 1 || !Number.isInteger(number);
@@ -46,16 +48,36 @@ const InputCard = ({
       return false;
     }
     
+    // Check if any request exceeds disk size
+    const exceedsDiskSize = numbers.some(num => {
+      const number = parseInt(num);
+      return number > diskSizeNum;
+    });
+    
+    if (exceedsDiskSize && !isNaN(diskSizeNum)) {
+      setErrors(prev => ({ ...prev, requests: `Requests cannot exceed disk size (${diskSizeNum})` }));
+      return false;
+    }
+    
     setErrors(prev => ({ ...prev, requests: "" }));
     return true;
   };
 
-  const validateHead = (value: string) => {
+  const validateHead = (value: string, currentDiskSize: string = diskSize) => {
     const number = parseInt(value);
+    const diskSizeNum = parseInt(currentDiskSize);
+    
     if (value === "" || isNaN(number) || number < 0 || !Number.isInteger(number)) {
       setErrors(prev => ({ ...prev, head: "Head position must be a non-negative integer" }));
       return false;
     }
+    
+    // Check if head position exceeds disk size
+    if (!isNaN(diskSizeNum) && number > diskSizeNum) {
+      setErrors(prev => ({ ...prev, head: `Head position cannot exceed disk size (${diskSizeNum})` }));
+      return false;
+    }
+    
     setErrors(prev => ({ ...prev, head: "" }));
     return true;
   };
@@ -66,6 +88,15 @@ const InputCard = ({
       setErrors(prev => ({ ...prev, diskSize: "Disk size must be an integer greater than 0" }));
       return false;
     }
+    
+    // When disk size changes, revalidate requests and head against new disk size
+    if (requests) {
+      validateRequests(requests, value);
+    }
+    if (head) {
+      validateHead(head, value);
+    }
+    
     setErrors(prev => ({ ...prev, diskSize: "" }));
     return true;
   };
