@@ -6,10 +6,17 @@ interface OutputCardProps {
     totalSeekTime: number;
     steps: string;
   } | null;
-  diskSize: number; // ADD THIS
+  diskSize: number;
 }
 
-const OutputCard = ({ output, diskSize }: OutputCardProps) => { // ADD diskSize prop
+const OutputCard = ({ output, diskSize }: OutputCardProps) => {
+  // Calculate number of requests (seekSequence length minus 1 for initial head position)
+  const numberOfRequests = output ? output.seekSequence.length - 1 : 0;
+  // Calculate average overhead movement
+  const averageOverheadMovement = output && numberOfRequests > 0 
+    ? output.totalSeekTime / numberOfRequests 
+    : 0;
+
   return (
     <div className="relative min-w-[825px] min-h-[625px] bg-white rounded-[10px] shadow-[4px_4px_10px_rgba(0,0,0,0.25)] p-6">
       <h2 className="text-2xl font-bold text-black mb-6 font-poppins">Output</h2>
@@ -26,14 +33,29 @@ const OutputCard = ({ output, diskSize }: OutputCardProps) => { // ADD diskSize 
             </p>
           </div>
 
-          {/* Total Seek Time */}
-          <div className="mb-10 font-poppins text-black">
+          {/* Total Overhead Movement */}
+          <div className="mb-4 font-poppins text-black">
             <div className="flex text-sm">
               <span className="font-medium">Total Overhead Movement</span>
               <span className="ml-2">= {output.steps}</span>
             </div>
             <div className="flex mt-1 ml-[174px]">
               <span className="text-sm font-bold">= {output.totalSeekTime}</span>
+            </div>
+          </div>
+
+          {/* Average Overhead Movement */}
+          <div className="mb-10 font-poppins text-black">
+            <div className="flex text-sm">
+              <span className="font-medium">Average Overhead Movement</span>
+              <span className="ml-2">
+                = {output.totalSeekTime} / {numberOfRequests}
+              </span>
+            </div>
+            <div className="flex mt-1 ml-[190px]">
+              <span className="text-sm font-bold">
+                = {averageOverheadMovement.toFixed(2)}
+              </span>
             </div>
           </div>
 
