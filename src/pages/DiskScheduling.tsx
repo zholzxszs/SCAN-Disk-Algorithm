@@ -60,7 +60,7 @@ const DiskScheduling: React.FC = () => {
               />
             </div>
             <div className="flex-1 min-w-0">
-              <OutputCard output={output} />
+              <OutputCard output={output} diskSize={parseInt(diskSize)} />
             </div>
           </div>
         </div>
@@ -72,7 +72,7 @@ const DiskScheduling: React.FC = () => {
           <div className="flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-2">
             <span>© 2025–2026 College of Computer Science, DMMMSU–SLUC.</span>
             <span className="hidden sm:block">|</span>
-            <span>zholzxszs</span>
+            <a href="https://github.com/zholzxszs/SCAN-Disk-Algorithm" target="_blank" className="text-white hover:underline hover:decoration-white">zholzxszs</a>
           </div>
         </div>
       </footer>
