@@ -109,6 +109,42 @@ const InputCard = ({
     }
   };
 
+  // Function to auto-generate head position, disk size, and 5 random requests
+  const generateRandomValues = () => {
+    // Generate random disk size between 100 and 300
+    const randomDiskSize = Math.floor(Math.random() * 201) + 100; // 100-300
+    setDiskSize(randomDiskSize.toString());
+    
+    // Generate random head position between 0 and disk size
+    const randomHead = Math.floor(Math.random() * (randomDiskSize + 1)); // 0 to disk size
+    setHead(randomHead.toString());
+    
+    // Generate exactly 5 random requests between 1 and disk size
+    const randomRequests: number[] = [];
+    
+    for (let i = 0; i < 5; i++) {
+      // Generate random number between 1 and disk size
+      const randomRequest = Math.floor(Math.random() * randomDiskSize) + 1;
+      randomRequests.push(randomRequest);
+    }
+    
+    // Remove duplicates and ensure we have exactly 5 unique numbers
+    let uniqueRequests = Array.from(new Set(randomRequests));
+    
+    // If we have less than 5 due to duplicates, generate more until we have 5
+    while (uniqueRequests.length < 5) {
+      const additionalRequest = Math.floor(Math.random() * randomDiskSize) + 1;
+      if (!uniqueRequests.includes(additionalRequest)) {
+        uniqueRequests.push(additionalRequest);
+      }
+    }
+    
+    setRequests(uniqueRequests.join(" "));
+    
+    // Clear any existing errors
+    setErrors({ head: "", diskSize: "", requests: "" });
+  };
+
   return (
     <div className="relative max-w-[370px] bg-white shadow-[4px_4px_10px_0px_rgba(0,0,0,0.25)] rounded-[10px] p-6">
       {/* Header */}
@@ -206,13 +242,22 @@ const InputCard = ({
         )}
       </div>
 
-      {/* Solve Button */}
-      <button
-        onClick={handleSolve}
-        className="w-[150px] bg-green-700 cursor-pointer hover:bg-green-800 text-white font-bold py-2 rounded-lg transition-colors font-poppins text-base"
-      >
-        SOLVE
-      </button>
+      {/* Buttons */}
+      <div className="flex gap-3">
+        <button
+          type="button"
+          onClick={generateRandomValues}
+          className="flex-1 bg-blue-600 cursor-pointer hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition-colors font-poppins text-base"
+        >
+          AUTO GENERATE
+        </button>
+        <button
+          onClick={handleSolve}
+          className="flex-1 bg-green-700 cursor-pointer hover:bg-green-800 text-white font-bold py-2 rounded-lg transition-colors font-poppins text-base"
+        >
+          SOLVE
+        </button>
+      </div>
     </div>
   );
 };
