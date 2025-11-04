@@ -2,7 +2,7 @@ export type ScanDirection = "right" | "left";
 
 export interface ScanOutput {
   seekSequence: number[];
-  totalSeekTime: number;
+  totalOverheadMovement: number;
   stepsExpression: string;
   stepsValues: string;
   stepsDetailed: string;
@@ -38,7 +38,7 @@ export function computeSCAN(
   console.log("----------------------------");
 
   let currentPosition = headPos;
-  let totalSeekTime = 0;
+  let totalOverheadMovement = 0;
 
   if (direction === "right") {
     console.log("Moving RIGHT first...");
@@ -47,7 +47,7 @@ export function computeSCAN(
     for (const track of right) {
       const seekDistance = Math.abs(currentPosition - track);
       console.log(`Move from ${currentPosition} → ${track} | Distance: ${seekDistance}`);
-      totalSeekTime += seekDistance;
+      totalOverheadMovement += seekDistance;
       stepsTriples.push({ from: currentPosition, to: track, dist: seekDistance });
       visited.push(track);
       currentPosition = track;
@@ -57,7 +57,7 @@ export function computeSCAN(
     if (currentPosition !== maxCylinder) {
       const seekDistance = Math.abs(currentPosition - maxCylinder);
       console.log(`Move to disk end ${maxCylinder} | Distance: ${seekDistance}`);
-      totalSeekTime += seekDistance;
+      totalOverheadMovement += seekDistance;
       stepsTriples.push({ from: currentPosition, to: maxCylinder, dist: seekDistance });
       visited.push(maxCylinder);
       currentPosition = maxCylinder;
@@ -68,7 +68,7 @@ export function computeSCAN(
     for (const track of left) {
       const seekDistance = Math.abs(currentPosition - track);
       console.log(`Move from ${currentPosition} → ${track} | Distance: ${seekDistance}`);
-      totalSeekTime += seekDistance;
+      totalOverheadMovement += seekDistance;
       stepsTriples.push({ from: currentPosition, to: track, dist: seekDistance });
       visited.push(track);
       currentPosition = track;
@@ -80,7 +80,7 @@ export function computeSCAN(
     for (const track of left) {
       const seekDistance = Math.abs(currentPosition - track);
       console.log(`Move from ${currentPosition} → ${track} | Distance: ${seekDistance}`);
-      totalSeekTime += seekDistance;
+      totalOverheadMovement += seekDistance;
       stepsTriples.push({ from: currentPosition, to: track, dist: seekDistance });
       visited.push(track);
       currentPosition = track;
@@ -90,7 +90,7 @@ export function computeSCAN(
     if (currentPosition !== 0) {
       const seekDistance = Math.abs(currentPosition - 0);
       console.log(`Move to disk start 0 | Distance: ${seekDistance}`);
-      totalSeekTime += seekDistance;
+      totalOverheadMovement += seekDistance;
       stepsTriples.push({ from: currentPosition, to: 0, dist: seekDistance });
       visited.push(0);
       currentPosition = 0;
@@ -101,7 +101,7 @@ export function computeSCAN(
     for (const track of right) {
       const seekDistance = Math.abs(currentPosition - track);
       console.log(`Move from ${currentPosition} → ${track} | Distance: ${seekDistance}`);
-      totalSeekTime += seekDistance;
+      totalOverheadMovement += seekDistance;
       stepsTriples.push({ from: currentPosition, to: track, dist: seekDistance });
       visited.push(track);
       currentPosition = track;
@@ -123,19 +123,11 @@ export function computeSCAN(
 
   const output: ScanOutput = {
     seekSequence: [headPos, ...visited],
-    totalSeekTime,
+    totalOverheadMovement,
     stepsExpression: exprParts.join(" + "),
     stepsValues: valueParts.join(" + "),
     stepsDetailed: detailedParts.join(" + "),
   };
-
-  console.log("----------------------------");
-  console.log("Final Seek Sequence:", output.seekSequence);
-  console.log("Total Seek Time:", totalSeekTime);
-  console.log("Steps Expression:", output.stepsExpression);
-  console.log("Steps Values:", output.stepsValues);
-  console.log("Steps Detailed:", output.stepsDetailed);
-  console.log("=== SCAN DEBUG END ===\n");
 
   return output;
 }

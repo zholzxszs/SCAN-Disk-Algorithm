@@ -3,7 +3,7 @@ import SeekChart from "../components/charts/SeekChart";
 interface OutputCardProps {
   output: {
     seekSequence: number[];
-    totalSeekTime: number;
+    totalOverheadMovement: number;
     steps: string;
   } | null;
   diskSize: number;
@@ -14,7 +14,7 @@ const OutputCard = ({ output, diskSize }: OutputCardProps) => {
   const numberOfRequests = output ? output.seekSequence.length - 1 : 0;
   // Calculate average overhead movement
   const averageOverheadMovement = output && numberOfRequests > 0 
-    ? output.totalSeekTime / numberOfRequests 
+    ? output.totalOverheadMovement / numberOfRequests 
     : 0;
 
   return (
@@ -40,7 +40,7 @@ const OutputCard = ({ output, diskSize }: OutputCardProps) => {
               <span className="ml-2">= {output.steps}</span>
             </div>
             <div className="flex mt-1 ml-[174px]">
-              <span className="text-sm font-bold">= {output.totalSeekTime}</span>
+              <span className="text-sm font-bold">= {output.totalOverheadMovement}</span>
             </div>
           </div>
 
@@ -49,7 +49,7 @@ const OutputCard = ({ output, diskSize }: OutputCardProps) => {
             <div className="flex text-sm">
               <span className="font-medium">Average Overhead Movement</span>
               <span className="ml-2">
-                = {output.totalSeekTime} / {numberOfRequests}
+                = {output.totalOverheadMovement} / {numberOfRequests}
               </span>
             </div>
             <div className="flex mt-1 ml-[190px]">

@@ -7,7 +7,7 @@ import { computeSCAN } from "@/algorithms/scan";
 const DiskScheduling: React.FC = () => {
   const [output, setOutput] = useState<{
     seekSequence: number[];
-    totalSeekTime: number;
+    totalOverheadMovement: number;
     steps: string;
   } | null>(null);
 
@@ -35,7 +35,7 @@ const DiskScheduling: React.FC = () => {
     const result = computeSCAN(reqs, headPos, direction as "right" | "left", maxCylinder);
     setOutput({
       seekSequence: result.seekSequence,
-      totalSeekTime: result.totalSeekTime,
+      totalOverheadMovement: result.totalOverheadMovement,
       steps: result.stepsExpression // or result.stepsDetailed if you want more detailed steps
     });
   };
