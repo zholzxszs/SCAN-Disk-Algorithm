@@ -127,7 +127,7 @@ const InputCard = ({
       {/* Disk Request */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-black mb-1 font-poppins">
-          Disk Request / Queue (separated by spaces)
+          Work Queue (separated by spaces)
         </label>
         <input
           type="text"
@@ -148,7 +148,7 @@ const InputCard = ({
       {/* Initial Head Position */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-black mb-1 font-poppins">
-          Initial Head Position
+          Initial Head Position <span className="text-red-500 font-bold">*</span>
         </label>
         <input
           type="number"
@@ -171,7 +171,7 @@ const InputCard = ({
       {/* Direction */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-black mb-1 font-poppins">
-          Direction of Head Movement
+          Direction
         </label>
         <select
           value={direction}
@@ -186,7 +186,7 @@ const InputCard = ({
       {/* Disk Size */}
       <div className="mb-6">
         <label className="block text-sm font-medium text-black mb-1 font-poppins">
-          Disk Size (Max Track Number)
+          Disk Size (Max Track Number) <span className="text-red-500 font-bold">*</span>
         </label>
         <input
           type="number"
