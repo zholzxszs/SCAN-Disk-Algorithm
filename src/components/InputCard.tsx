@@ -24,114 +24,89 @@ const InputCard = ({
   onSolve,
 }: InputCardProps) => {
   const [errors, setErrors] = useState({
-    requests: "",
     head: "",
-    diskSize: ""
+    diskSize: "",
+    requests: ""
   });
 
-  const validateRequests = (value: string, currentDiskSize: string = diskSize) => {
-    if (value.trim() === "") {
-      setErrors(prev => ({ ...prev, requests: "" }));
-      return true;
-    }
-    
-    const numbers = value.split(" ").filter(item => item !== "");
-    const diskSizeNum = parseInt(currentDiskSize);
-    
-    const hasInvalid = numbers.some(num => {
-      const number = parseInt(num);
-      return isNaN(number) || number < 1 || !Number.isInteger(number);
-    });
-    
-    if (hasInvalid) {
-      setErrors(prev => ({ ...prev, requests: "Requests must be integers ≥ 1 or empty" }));
-      return false;
-    }
-    
-    // Check if any request exceeds disk size
-    const exceedsDiskSize = numbers.some(num => {
-      const number = parseInt(num);
-      return number > diskSizeNum;
-    });
-    
-    if (exceedsDiskSize && !isNaN(diskSizeNum)) {
-      setErrors(prev => ({ ...prev, requests: `Requests cannot exceed disk size (${diskSizeNum})` }));
-      return false;
-    }
-    
-    setErrors(prev => ({ ...prev, requests: "" }));
-    return true;
-  };
-
-  const validateHead = (value: string, currentDiskSize: string = diskSize) => {
-    const number = parseInt(value);
-    const diskSizeNum = parseInt(currentDiskSize);
-    
-    if (value === "" || isNaN(number) || number < 0 || !Number.isInteger(number)) {
-      setErrors(prev => ({ ...prev, head: "Head position must be a non-negative integer" }));
-      return false;
-    }
-    
-    // Check if head position exceeds disk size
-    if (!isNaN(diskSizeNum) && number > diskSizeNum) {
-      setErrors(prev => ({ ...prev, head: `Head position cannot exceed disk size (${diskSizeNum})` }));
-      return false;
-    }
-    
-    setErrors(prev => ({ ...prev, head: "" }));
-    return true;
-  };
-
-  const validateDiskSize = (value: string) => {
-    const number = parseInt(value);
-    if (value === "" || isNaN(number) || number <= 0 || !Number.isInteger(number)) {
-      setErrors(prev => ({ ...prev, diskSize: "Disk size must be an integer greater than 0" }));
-      return false;
-    }
-    
-    // When disk size changes, revalidate requests and head against new disk size
-    if (requests) {
-      validateRequests(requests, value);
-    }
-    if (head) {
-      validateHead(head, value);
-    }
-    
-    setErrors(prev => ({ ...prev, diskSize: "" }));
-    return true;
-  };
-
-  const handleRequestsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setRequests(value);
-    validateRequests(value);
-  };
-
-  const handleHeadChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setHead(value);
-    validateHead(value);
-  };
-
-  const handleDiskSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setDiskSize(value);
-    validateDiskSize(value);
-  };
-
   const handleSolve = () => {
-    const isRequestsValid = validateRequests(requests);
-    const isHeadValid = validateHead(head);
-    const isDiskSizeValid = validateDiskSize(diskSize);
+    // Reset errors
+    setErrors({ head: "", diskSize: "", requests: "" });
 
-    if (isRequestsValid && isHeadValid && isDiskSizeValid) {
-      onSolve();
+    let hasError = false;
+    const newErrors = { head: "", diskSize: "", requests: "" };
+
+    // Validate head position
+    const headPos = parseInt(head);
+    if (head === "") {
+      newErrors.head = "This field is required";
+      hasError = true;
+    } else if (isNaN(headPos) || headPos < 0 || !Number.isInteger(headPos)) {
+      newErrors.head = "Head position must be a non-negative integer";
+      hasError = true;
     }
+
+    // Validate disk size
+    const diskSizeNum = parseInt(diskSize);
+    if (diskSize === "") {
+      newErrors.diskSize = "This field is required";
+      hasError = true;
+    } else if (isNaN(diskSizeNum) || diskSizeNum <= 0 || !Number.isInteger(diskSizeNum)) {
+      newErrors.diskSize = "Disk size must be an integer greater than 0";
+      hasError = true;
+    }
+
+    // Validate head position doesn't exceed disk size (only if both are valid)
+    if (!newErrors.head && !newErrors.diskSize && headPos > diskSizeNum) {
+      newErrors.head = `Head position (${headPos}) cannot exceed disk size (${diskSizeNum})`;
+      hasError = true;
+    }
+
+    // Validate requests (if any)
+    if (requests.trim() !== "") {
+      const numbers = requests.split(" ").filter(item => item !== "");
+      
+      // Check if all requests are valid integers ≥ 1
+      const invalidRequests = numbers.filter(num => {
+        const number = parseInt(num);
+        return isNaN(number) || number < 1 || !Number.isInteger(number);
+      });
+      
+      if (invalidRequests.length > 0) {
+        newErrors.requests = "All requests must be integers ≥ 1";
+        hasError = true;
+      }
+
+      // Check if any request exceeds disk size (only if disk size is valid)
+      if (!newErrors.diskSize && !newErrors.requests) {
+        const exceedingRequests = numbers.filter(num => {
+          const number = parseInt(num);
+          return number > diskSizeNum;
+        });
+        
+        if (exceedingRequests.length > 0) {
+          newErrors.requests = `Requests cannot exceed disk size (${diskSizeNum}): ${exceedingRequests.join(", ")}`;
+          hasError = true;
+        }
+      }
+    }
+
+    if (hasError) {
+      setErrors(newErrors);
+      return;
+    }
+
+    // If all validations pass, call onSolve
+    onSolve();
   };
 
-  const isSolveDisabled = () => {
-    return errors.requests !== "" || errors.head !== "" || errors.diskSize !== "" || 
-           head === "" || diskSize === "";
+  // Function to handle input changes and clear errors for that field
+  const handleInputChange = (setter: Dispatch<SetStateAction<string>>, field: keyof typeof errors) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setter(e.target.value);
+    // Clear error for this field when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: "" }));
+    }
   };
 
   return (
@@ -157,10 +132,12 @@ const InputCard = ({
         <input
           type="text"
           value={requests}
-          onChange={handleRequestsChange}
+          onChange={handleInputChange(setRequests, "requests")}
           placeholder="e.g. 82 170 43 140 24 16 190"
-          className={`w-full border rounded-md px-3 py-2 text-sm font-poppins focus:outline-none focus:ring-2 focus:ring-green-700 ${
-            errors.requests ? "border-red-500" : "border-neutral-400"
+          className={`w-full border rounded-md px-3 py-2 text-sm font-poppins focus:outline-none focus:ring-2 ${
+            errors.requests 
+              ? "border-red-500 focus:ring-red-500" 
+              : "border-neutral-400 focus:ring-green-700"
           }`}
         />
         {errors.requests && (
@@ -176,12 +153,14 @@ const InputCard = ({
         <input
           type="number"
           value={head}
-          onChange={handleHeadChange}
+          onChange={handleInputChange(setHead, "head")}
           placeholder="e.g. 50"
           min="0"
           step="1"
-          className={`w-full border rounded-md px-3 py-2 text-sm font-poppins focus:outline-none focus:ring-2 focus:ring-green-700 ${
-            errors.head ? "border-red-500" : "border-neutral-400"
+          className={`w-full border rounded-md px-3 py-2 text-sm font-poppins focus:outline-none focus:ring-2 ${
+            errors.head 
+              ? "border-red-500 focus:ring-red-500" 
+              : "border-neutral-400 focus:ring-green-700"
           }`}
         />
         {errors.head && (
@@ -212,12 +191,14 @@ const InputCard = ({
         <input
           type="number"
           value={diskSize}
-          onChange={handleDiskSizeChange}
+          onChange={handleInputChange(setDiskSize, "diskSize")}
           placeholder="e.g. 199"
           min="1"
           step="1"
-          className={`w-full border rounded-md px-3 py-2 text-sm font-poppins focus:outline-none focus:ring-2 focus:ring-green-700 ${
-            errors.diskSize ? "border-red-500" : "border-neutral-400"
+          className={`w-full border rounded-md px-3 py-2 text-sm font-poppins focus:outline-none focus:ring-2 ${
+            errors.diskSize 
+              ? "border-red-500 focus:ring-red-500" 
+              : "border-neutral-400 focus:ring-green-700"
           }`}
         />
         {errors.diskSize && (
@@ -228,12 +209,7 @@ const InputCard = ({
       {/* Solve Button */}
       <button
         onClick={handleSolve}
-        disabled={isSolveDisabled()}
-        className={`w-[150px] font-bold py-2 rounded-lg transition-colors font-poppins text-base ${
-          isSolveDisabled() 
-            ? "bg-gray-400 cursor-not-allowed text-gray-200" 
-            : "bg-green-700 cursor-pointer hover:bg-green-800 text-white"
-        }`}
+        className="w-[150px] bg-green-700 cursor-pointer hover:bg-green-800 text-white font-bold py-2 rounded-lg transition-colors font-poppins text-base"
       >
         SOLVE
       </button>
