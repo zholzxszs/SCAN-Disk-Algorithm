@@ -29,12 +29,6 @@ body {
   font-style: normal;
 }
 
-/* Footer text */
-.footer-text {
-  font-size: 0.75rem; /* text-xs */
-  font-weight: 400;
-  color: #fff;
-}
 
 /* Card titles (Input / Output headers) */
 .card-title {
@@ -91,24 +85,3 @@ body {
   font-optical-sizing: auto;
 }
 
-/* =====================================
-   Footer Bar
-   ===================================== */
-.footer-bar {
-  background-color: #166534; /* green-800 */
-  text-align: center;
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
-  color: #fff;
-  font-size: 0.75rem; /* text-xs */
-  font-family: "Poppins", sans-serif;
-  font-optical-sizing: auto;
-  border-top-left-radius: 0.5rem;
-  border-top-right-radius: 0.5rem;
-}
-
-@media (min-width: 640px) {
-  .footer-bar {
-    font-size: 0.875rem; /* sm:text-sm */
-  }
-}
