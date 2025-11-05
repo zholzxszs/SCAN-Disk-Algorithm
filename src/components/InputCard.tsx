@@ -78,10 +78,10 @@ const InputCard = ({
       // Check all requests are valid integers ≥ 1
       const invalidRequests = numbers.filter(num => {
         const number = parseInt(num);
-        return isNaN(number) || number < 1 || !Number.isInteger(number);
+        return isNaN(number) || number < 0 || !Number.isInteger(number);
       });
       
-      if (invalidRequests.length >= 0) {
+      if (invalidRequests.length > 1) {
         newErrors.requests = "All requests must be integers ≥ 0";
         hasError = true;
       }
