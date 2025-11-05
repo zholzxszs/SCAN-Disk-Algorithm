@@ -21,6 +21,7 @@ const DiskScheduling: React.FC = () => {
   const [head, setHead] = useState<string>("");
   const [direction, setDirection] = useState<string>("right");
   const [diskSize, setDiskSize] = useState<string>("");
+  const [parsedRequests, setParsedRequests] = useState<number[]>([]);
 
   /**
    * Handles the solve button click - processes inputs and executes SCAN algorithm
@@ -36,6 +37,7 @@ const DiskScheduling: React.FC = () => {
     // Parse numeric inputs with fallback values
     const headPos = parseInt(head);
     const maxCylinder = parseInt(diskSize) || 199; // Default to 199 if invalid
+    setParsedRequests(reqs);
 
     // Basic validation - head position is required
     if (isNaN(headPos)) {
@@ -76,7 +78,7 @@ const DiskScheduling: React.FC = () => {
             </div>
             {/* Output Panel - Flexible width to accommodate chart */}
             <div className="flex-1 min-w-0">
-              <OutputCard output={output} diskSize={parseInt(diskSize)} />
+              <OutputCard output={output} diskSize={parseInt(diskSize)} requests={parsedRequests} />
             </div>
           </div>
         </div>

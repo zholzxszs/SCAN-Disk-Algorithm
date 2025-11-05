@@ -7,18 +7,20 @@ interface OutputCardProps {
     steps: string;
   } | null;
   diskSize: number;
+  requests: number[];
 }
 
 /**
  * Displays the results of the SCAN disk scheduling algorithm
  * Shows seek sequence, calculations, and visual chart
  */
-const OutputCard = ({ output, diskSize }: OutputCardProps) => {
+const OutputCard = ({ output, diskSize, requests }: OutputCardProps) => {
   // Calculate derived metrics from the output
-  const numberOfRequests = output ? output.seekSequence.length - 1 : 0; // Exclude initial head position
+  const numberOfRequests = requests ? requests.length : 0; // Use actual requests count
+  
   const averageOverheadMovement = output && numberOfRequests > 0 
     ? output.totalOverheadMovement / numberOfRequests 
-    : 0;
+    : 0;``
 
   return (
     <div className="relative min-w-[825px] min-h-[625px] bg-white rounded-[10px] shadow-[4px_4px_10px_rgba(0,0,0,0.25)] p-6">
