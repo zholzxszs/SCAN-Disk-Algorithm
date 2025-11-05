@@ -32,7 +32,7 @@ const OutputCard = ({ output, diskSize, requests, isSolved }: OutputCardProps) =
           {/* Seek Sequence - shows the complete path of disk head movement */}
           <div className="mb-4">
             <p className="text-sm text-black font-poppins">
-              <span className="font-medium">Seek Sequence</span>{" "}
+              <span className="font-bold">Seek Sequence</span>{" "}
               <span className="ml-2">
                 = {output.seekSequence.join(" ")}
               </span>
@@ -41,26 +41,25 @@ const OutputCard = ({ output, diskSize, requests, isSolved }: OutputCardProps) =
 
           {/* Total Overhead Movement - shows calculation steps and final result */}
           <div className="mb-4 font-poppins text-black">
-            <div className="flex text-sm">
-              <span className="font-medium">Total Overhead Movement</span>
-              <span className="ml-2">= {output.steps}</span>
+            <div className="text-sm">
+              <span className="font-bold">Total Overhead Movement</span>
+              <span> = {output.steps}</span>
+              <span className="ml-2 text-sm font-bold">= {output.totalOverheadMovement}</span>
             </div>
             <div className="flex mt-1 ml-[174px]">
-              <span className="text-sm font-bold">= {output.totalOverheadMovement}</span>
+              
             </div>
           </div>
 
           {/* Average Overhead Movement - performance metric per request */}
           <div className="mb-10 font-poppins text-black">
             <div className="flex text-sm">
-              <span className="font-medium">Average Overhead Movement</span>
+              <span className="font-bold">Average Overhead Movement</span>
               <span className="ml-2">
                 = {output.totalOverheadMovement} / {numberOfRequests}
               </span>
-            </div>
-            <div className="flex mt-1 ml-[190px]">
-              <span className="text-sm font-bold">
-                = {averageOverheadMovement.toFixed(2)}
+              <span className="text-sm font-bold ml-2">
+                 = {averageOverheadMovement.toFixed(2)}
               </span>
             </div>
           </div>
