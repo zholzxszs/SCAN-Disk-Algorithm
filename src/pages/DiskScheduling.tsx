@@ -1,5 +1,5 @@
 import type React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import InputCard from "@/components/InputCard";
 import OutputCard from "@/components/OutputCard";
 import { computeSCAN } from "@/algorithms/scan";
@@ -22,6 +22,13 @@ const DiskScheduling: React.FC = () => {
   const [direction, setDirection] = useState<string>("right");
   const [diskSize, setDiskSize] = useState<string>("");
   const [parsedRequests, setParsedRequests] = useState<number[]>([]);
+  const [isSolved, setIsSolved] = useState(false);
+
+  // Reset solved state when any input changes
+  useEffect(() => {
+    setIsSolved(false);
+    setOutput(null);
+  }, [requests, head, diskSize]);
 
   /**
    * Handles the solve button click - processes inputs and executes SCAN algorithm
@@ -54,6 +61,8 @@ const DiskScheduling: React.FC = () => {
       totalOverheadMovement: result.totalOverheadMovement,
       steps: result.stepsExpression // Mathematical expression of seek operations
     });
+    
+    setIsSolved(true);
   };
 
   return (
@@ -78,7 +87,12 @@ const DiskScheduling: React.FC = () => {
             </div>
             {/* Output Panel - Flexible width to accommodate chart */}
             <div className="flex-1 min-w-0">
-              <OutputCard output={output} diskSize={parseInt(diskSize)} requests={parsedRequests} />
+              <OutputCard 
+                output={output} 
+                diskSize={parseInt(diskSize) || 199} 
+                requests={parsedRequests} 
+                isSolved={isSolved} 
+              />
             </div>
           </div>
         </div>

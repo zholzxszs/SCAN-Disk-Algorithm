@@ -8,25 +8,26 @@ interface OutputCardProps {
   } | null;
   diskSize: number;
   requests: number[];
+  isSolved: boolean;
 }
 
 /**
  * Displays the results of the SCAN disk scheduling algorithm
  * Shows seek sequence, calculations, and visual chart
  */
-const OutputCard = ({ output, diskSize, requests }: OutputCardProps) => {
+const OutputCard = ({ output, diskSize, requests, isSolved }: OutputCardProps) => {
   // Calculate derived metrics from the output
   const numberOfRequests = requests ? requests.length : 0; // Use actual requests count
   
   const averageOverheadMovement = output && numberOfRequests > 0 
     ? output.totalOverheadMovement / numberOfRequests 
-    : 0;``
+    : 0;
 
   return (
     <div className="relative min-w-[825px] min-h-[625px] bg-white rounded-[10px] shadow-[4px_4px_10px_rgba(0,0,0,0.25)] p-6">
       <h2 className="text-2xl font-bold text-black mb-6 font-poppins">Output</h2>
 
-      {output ? (
+      {output && isSolved ? (
         <>
           {/* Seek Sequence - shows the complete path of disk head movement */}
           <div className="mb-4">
