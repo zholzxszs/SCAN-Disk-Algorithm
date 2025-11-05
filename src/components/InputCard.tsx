@@ -12,6 +12,10 @@ interface InputCardProps {
   onSolve: () => void;
 }
 
+/**
+ * Input component for SCAN disk scheduling algorithm parameters
+ * Handles user input, validation, and provides auto-generation for testing
+ */
 const InputCard = ({
   requests,
   setRequests,
@@ -23,20 +27,25 @@ const InputCard = ({
   setDiskSize,
   onSolve,
 }: InputCardProps) => {
+  // State for tracking validation errors per field
   const [errors, setErrors] = useState({
     head: "",
     diskSize: "",
     requests: ""
   });
 
+  /**
+   * Main validation and solve handler
+   * Performs comprehensive input validation before executing the algorithm
+   */
   const handleSolve = () => {
-    // Reset errors
+    // Reset all errors before validation
     setErrors({ head: "", diskSize: "", requests: "" });
 
     let hasError = false;
     const newErrors = { head: "", diskSize: "", requests: "" };
 
-    // Validate head position
+    // Validate head position - must be non-negative integer
     const headPos = parseInt(head);
     if (head === "") {
       newErrors.head = "This field is required";
@@ -46,7 +55,7 @@ const InputCard = ({
       hasError = true;
     }
 
-    // Validate disk size
+    // Validate disk size - must be positive integer
     const diskSizeNum = parseInt(diskSize);
     if (diskSize === "") {
       newErrors.diskSize = "This field is required";
@@ -56,28 +65,28 @@ const InputCard = ({
       hasError = true;
     }
 
-    // Validate head position doesn't exceed disk size (only if both are valid)
+    // Cross-validation: head position cannot exceed disk size
     if (!newErrors.head && !newErrors.diskSize && headPos > diskSizeNum) {
       newErrors.head = `Head position (${headPos}) cannot exceed disk size (${diskSizeNum})`;
       hasError = true;
     }
 
-    // Validate requests (if any)
+    // Validate requests (optional field) - if provided, must be valid integers
     if (requests.trim() !== "") {
       const numbers = requests.split(" ").filter(item => item !== "");
       
-      // Check if all requests are valid integers ≥ 1
+      // Check all requests are valid integers ≥ 1
       const invalidRequests = numbers.filter(num => {
         const number = parseInt(num);
         return isNaN(number) || number < 1 || !Number.isInteger(number);
       });
       
-      if (invalidRequests.length > 0) {
-        newErrors.requests = "All requests must be integers ≥ 1";
+      if (invalidRequests.length >= 0) {
+        newErrors.requests = "All requests must be integers ≥ 0";
         hasError = true;
       }
 
-      // Check if any request exceeds disk size (only if disk size is valid)
+      // Check no requests exceed disk size boundaries
       if (!newErrors.diskSize && !newErrors.requests) {
         const exceedingRequests = numbers.filter(num => {
           const number = parseInt(num);
@@ -91,47 +100,53 @@ const InputCard = ({
       }
     }
 
+    // If validation failed, show errors and abort
     if (hasError) {
       setErrors(newErrors);
       return;
     }
 
-    // If all validations pass, call onSolve
+    // All validations passed - execute the algorithm
     onSolve();
   };
 
-  // Function to handle input changes and clear errors for that field
+  /**
+   * Generic input change handler that clears field-specific errors
+   * Provides immediate feedback by clearing errors when user starts correcting
+   */
   const handleInputChange = (setter: Dispatch<SetStateAction<string>>, field: keyof typeof errors) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setter(e.target.value);
-    // Clear error for this field when user starts typing
+    // Clear error for this specific field when user modifies it
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: "" }));
     }
   };
 
-  // Function to auto-generate head position, disk size, and 5 random requests
+  /**
+   * Auto-generates realistic test values for all input fields
+   * Creates a complete, valid test case with one click
+   */
   const generateRandomValues = () => {
-    // Generate random disk size between 100 and 300
+    // Generate random disk size in realistic range (100-300)
     const randomDiskSize = Math.floor(Math.random() * 201) + 100; // 100-300
     setDiskSize(randomDiskSize.toString());
     
-    // Generate random head position between 0 and disk size
+    // Generate random head position within disk boundaries
     const randomHead = Math.floor(Math.random() * (randomDiskSize + 1)); // 0 to disk size
     setHead(randomHead.toString());
     
-    // Generate exactly 5 random requests between 1 and disk size
+    // Generate exactly 5 unique random requests within disk size
     const randomRequests: number[] = [];
     
     for (let i = 0; i < 5; i++) {
-      // Generate random number between 1 and disk size
       const randomRequest = Math.floor(Math.random() * randomDiskSize) + 1;
       randomRequests.push(randomRequest);
     }
     
-    // Remove duplicates and ensure we have exactly 5 unique numbers
+    // Ensure uniqueness - remove duplicates and maintain 5 requests
     let uniqueRequests = Array.from(new Set(randomRequests));
     
-    // If we have less than 5 due to duplicates, generate more until we have 5
+    // If duplicates were removed, generate additional unique requests
     while (uniqueRequests.length < 5) {
       const additionalRequest = Math.floor(Math.random() * randomDiskSize) + 1;
       if (!uniqueRequests.includes(additionalRequest)) {
@@ -141,7 +156,7 @@ const InputCard = ({
     
     setRequests(uniqueRequests.join(" "));
     
-    // Clear any existing errors
+    // Clear any pre-existing errors since generated values are always valid
     setErrors({ head: "", diskSize: "", requests: "" });
   };
 
@@ -150,7 +165,7 @@ const InputCard = ({
       {/* Header */}
       <h2 className="text-2xl font-bold text-black mb-6 font-poppins">Input</h2>
 
-      {/* Algorithm */}
+      {/* Algorithm display (read-only) */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-black mb-1 font-poppins">
           Algorithm
@@ -160,7 +175,7 @@ const InputCard = ({
         </div>
       </div>
 
-      {/* Disk Request */}
+      {/* Work Queue input - optional field for disk requests */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-black mb-1 font-poppins">
           Work Queue (separated by spaces)
@@ -181,7 +196,7 @@ const InputCard = ({
         )}
       </div>
 
-      {/* Initial Head Position */}
+      {/* Initial Head Position input - required field */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-black mb-1 font-poppins">
           Initial Head Position <span className="text-red-500 font-bold">*</span>
@@ -204,7 +219,7 @@ const InputCard = ({
         )}
       </div>
 
-      {/* Direction */}
+      {/* Direction selection - determines initial head movement direction */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-black mb-1 font-poppins">
           Direction
@@ -219,7 +234,7 @@ const InputCard = ({
         </select>
       </div>
 
-      {/* Disk Size */}
+      {/* Disk Size input - required field defining disk boundaries */}
       <div className="mb-6">
         <label className="block text-sm font-medium text-black mb-1 font-poppins">
           Disk Size (Max Track Number) <span className="text-red-500 font-bold">*</span>
@@ -242,7 +257,7 @@ const InputCard = ({
         )}
       </div>
 
-      {/* Buttons */}
+      {/* Action buttons */}
       <div className="flex gap-3">
         <button
           type="button"
