@@ -1,30 +1,36 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+/* =====================================
+   Font Import (Variable Poppins)
+   ===================================== */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:opsz,wght@8..144,100..900&display=swap");
 @import "tailwindcss";
 
-/* ===========================
+/* =====================================
    Global Styles
-   =========================== */
-
+   ===================================== */
 html {
   scroll-behavior: smooth;
 }
 
 body {
   font-family: "Poppins", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-optical-sizing: auto;
+  font-style: normal;
   color: #000;
 }
 
-/* ===========================
+/* =====================================
    Font & Text Styles
-   =========================== */
-
+   ===================================== */
 .font-poppins {
   font-family: "Poppins", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
 }
 
 /* Footer text */
 .footer-text {
-  font-family: "Poppins", sans-serif;
   font-size: 0.75rem; /* text-xs */
   font-weight: 400;
   color: #fff;
@@ -32,7 +38,6 @@ body {
 
 /* Card titles (Input / Output headers) */
 .card-title {
-  font-family: "Poppins", sans-serif;
   font-size: 1.875rem; /* text-3xl */
   font-weight: 700;
   color: #000;
@@ -40,7 +45,6 @@ body {
 
 /* Regular text */
 .text-regular {
-  font-family: "Poppins", sans-serif;
   font-size: 0.875rem; /* text-sm */
   font-weight: 400;
   color: #000;
@@ -48,7 +52,6 @@ body {
 
 /* Bold regular text */
 .text-regular-bold {
-  font-family: "Poppins", sans-serif;
   font-size: 0.875rem;
   font-weight: 700;
   color: #000;
@@ -56,16 +59,14 @@ body {
 
 /* Button text */
 .btn-text {
-  font-family: "Poppins", sans-serif;
   font-size: 1.125rem; /* text-lg */
   font-weight: 700;
   color: #fff;
 }
 
-/* ===========================
+/* =====================================
    Button & Card Styles
-   =========================== */
-
+   ===================================== */
 .btn-primary {
   background-color: #166534; /* green-800 */
   color: white;
@@ -87,20 +88,21 @@ body {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 1.5rem; /* p-6 */
   font-family: "Poppins", sans-serif;
+  font-optical-sizing: auto;
 }
 
-/* ===========================
+/* =====================================
    Footer Bar
-   =========================== */
-
+   ===================================== */
 .footer-bar {
   background-color: #166534; /* green-800 */
   text-align: center;
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
-  font-family: "Poppins", sans-serif;
   color: #fff;
   font-size: 0.75rem; /* text-xs */
+  font-family: "Poppins", sans-serif;
+  font-optical-sizing: auto;
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
 }
