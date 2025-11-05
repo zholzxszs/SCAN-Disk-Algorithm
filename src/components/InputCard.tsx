@@ -264,7 +264,7 @@ const InputCard = ({
           onClick={generateRandomValues}
           className="flex-1 bg-blue-600 cursor-pointer hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition-colors font-poppins text-base"
         >
-          AUTO GENERATE
+          GENERATE
         </button>
         <button
           onClick={handleSolve}
