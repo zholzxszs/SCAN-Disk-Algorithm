@@ -9,10 +9,13 @@ interface OutputCardProps {
   diskSize: number;
 }
 
+/**
+ * Displays the results of the SCAN disk scheduling algorithm
+ * Shows seek sequence, calculations, and visual chart
+ */
 const OutputCard = ({ output, diskSize }: OutputCardProps) => {
-  // Calculate number of requests (seekSequence length minus 1 for initial head position)
-  const numberOfRequests = output ? output.seekSequence.length - 1 : 0;
-  // Calculate average overhead movement
+  // Calculate derived metrics from the output
+  const numberOfRequests = output ? output.seekSequence.length - 1 : 0; // Exclude initial head position
   const averageOverheadMovement = output && numberOfRequests > 0 
     ? output.totalOverheadMovement / numberOfRequests 
     : 0;
@@ -23,7 +26,7 @@ const OutputCard = ({ output, diskSize }: OutputCardProps) => {
 
       {output ? (
         <>
-          {/* Seek Sequence */}
+          {/* Seek Sequence - shows the complete path of disk head movement */}
           <div className="mb-4">
             <p className="text-sm text-black font-poppins">
               <span className="font-medium">Seek Sequence</span>{" "}
@@ -33,7 +36,7 @@ const OutputCard = ({ output, diskSize }: OutputCardProps) => {
             </p>
           </div>
 
-          {/* Total Overhead Movement */}
+          {/* Total Overhead Movement - shows calculation steps and final result */}
           <div className="mb-4 font-poppins text-black">
             <div className="flex text-sm">
               <span className="font-medium">Total Overhead Movement</span>
@@ -44,7 +47,7 @@ const OutputCard = ({ output, diskSize }: OutputCardProps) => {
             </div>
           </div>
 
-          {/* Average Overhead Movement */}
+          {/* Average Overhead Movement - performance metric per request */}
           <div className="mb-10 font-poppins text-black">
             <div className="flex text-sm">
               <span className="font-medium">Average Overhead Movement</span>
@@ -59,12 +62,13 @@ const OutputCard = ({ output, diskSize }: OutputCardProps) => {
             </div>
           </div>
 
-          {/* Chart */}
+          {/* Visual chart showing the seek sequence graphically */}
           <div className="w-full h-[300px] mx-auto">
             <SeekChart sequence={output.seekSequence} diskSize={diskSize} /> 
           </div>
         </>
       ) : (
+        // Placeholder when no results are available yet
         <p className="text-gray-500 text-sm font-poppins">
           No output yet. Fill input and click SOLVE.
         </p>

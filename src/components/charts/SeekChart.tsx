@@ -6,63 +6,78 @@ interface SeekChartProps {
 }
 
 const SeekChart: React.FC<SeekChartProps> = ({ sequence, diskSize }) => {
+  // Early return if no valid sequence is provided
   if (!sequence || sequence.length === 0) {
     return <div>No seek sequence provided.</div>;
   }
 
-  // Include 0 and diskSize in the tracks to always show them
+  // Create comprehensive track list that always includes boundaries (0 and diskSize)
+  // This ensures the chart always shows the full disk range for context
   const allTracks = Array.from(new Set([0, ...sequence, diskSize])).sort((a, b) => a - b);
   
-  // Chart layout
-  const baseWidth = 750;
-  const minWidthPerTrack = 60;
-  const width = Math.max(baseWidth, allTracks.length * minWidthPerTrack);
-  const baseHeight = 400;
-  const minHeightPerStep = 50;
-  const height = Math.max(baseHeight, sequence.length * minHeightPerStep);
-  const padding = 60;
+  // Chart layout configuration with responsive sizing
+  const baseWidth = 750;                    // Minimum chart width
+  const minWidthPerTrack = 60;              // Width allocated per track for spacing
+  const width = Math.max(baseWidth, allTracks.length * minWidthPerTrack); // Dynamic width based on track count
+  const baseHeight = 400;                   // Minimum chart height
+  const minHeightPerStep = 50;              // Height allocated per seek step
+  const height = Math.max(baseHeight, sequence.length * minHeightPerStep); // Dynamic height based on sequence length
+  const padding = 60;                       // Padding around chart edges
 
-  const stepHeight = minHeightPerStep;
-  const usableWidth = width - padding * 2;
+  const stepHeight = minHeightPerStep;      // Fixed vertical spacing between steps
+  const usableWidth = width - padding * 2;  // Actual drawing area width
 
-  // Map track → X coordinate (based on all tracks including 0 and diskSize)
+  /**
+   * Converts a track number to its corresponding X coordinate on the chart
+   * Uses linear interpolation based on track's position in sorted track list
+   */
   const trackToX = (track: number) => {
     const index = allTracks.indexOf(track);
     return padding + (index / (allTracks.length - 1)) * usableWidth;
   };
 
-  // Map step → Y coordinate (based on order of access)
+  /**
+   * Converts a step index to its corresponding Y coordinate on the chart
+   * Steps are plotted vertically to show temporal sequence of disk access
+   */
   const stepToY = (step: number) => padding + step * stepHeight;
 
-  // Prepare plotted points
+  // Transform seek sequence into plottable points with coordinates
   const points = sequence.map((track, i) => ({
-    x: trackToX(track),
-    y: stepToY(i),
-    track,
-    step: i,
+    x: trackToX(track),  // X coordinate based on track position
+    y: stepToY(i),       // Y coordinate based on step order
+    track,               // Original track number
+    step: i,             // Step index in sequence
   }));
 
-  // Function to draw arrowhead
+  /**
+   * Generates SVG polygon points for an arrowhead
+   * Creates a triangular arrow pointing in the specified direction
+   */
   const drawArrowhead = (x: number, y: number, angle: number) => {
-    const size = 8;
-    const radians = (angle * Math.PI) / 180;
+    const size = 8;  // Arrowhead size in pixels
+    const radians = (angle * Math.PI) / 180;  // Convert degrees to radians
     
+    // Calculate three points for triangle: tip and two base corners
     const points = [
-      [x, y],
-      [x - size * Math.cos(radians - Math.PI/6), y - size * Math.sin(radians - Math.PI/6)],
-      [x - size * Math.cos(radians + Math.PI/6), y - size * Math.sin(radians + Math.PI/6)]
+      [x, y],  // Arrow tip
+      [x - size * Math.cos(radians - Math.PI/6), y - size * Math.sin(radians - Math.PI/6)],  // Left base corner
+      [x - size * Math.cos(radians + Math.PI/6), y - size * Math.sin(radians + Math.PI/6)]   // Right base corner
     ];
     
-    return points.map(p => p.join(",")).join(" ");
+    return points.map(p => p.join(",")).join(" ");  // Convert to SVG points format
   };
 
-  // Calculate angles for arrows between points
+  /**
+   * Calculates the angle (in degrees) between two points for arrow direction
+   * Uses arctangent to determine the angle from current to next point
+   */
   const getArrowAngle = (currentPoint: typeof points[0], nextPoint: typeof points[0] | null) => {
-    if (!nextPoint) return 0; // Last point, no arrow
+    if (!nextPoint) return 0; // No angle for last point (no next point)
     
-    const dx = nextPoint.x - currentPoint.x;
-    const dy = nextPoint.y - currentPoint.y;
-    return (Math.atan2(dy, dx) * 180) / Math.PI;
+    const dx = nextPoint.x - currentPoint.x;  // Horizontal distance
+    const dy = nextPoint.y - currentPoint.y;  // Vertical distance
+    return (Math.atan2(dy, dx) * 180) / Math.PI;  // Convert to degrees
   };
 
   return (
@@ -83,7 +98,7 @@ const SeekChart: React.FC<SeekChartProps> = ({ sequence, diskSize }) => {
           background: "white",
         }}
       >
-        {/* X-axis (TOP) */}
+        {/* X-axis line at the top showing track positions */}
         <line
           x1={padding}
           y1={padding - 20}
@@ -93,7 +108,7 @@ const SeekChart: React.FC<SeekChartProps> = ({ sequence, diskSize }) => {
           strokeWidth={1.5}
         />
 
-        {/* X-axis Labels (all tracks including 0 and diskSize) */}
+        {/* Track number labels along the X-axis */}
         {allTracks.map((track) => {
           const x = trackToX(track);
           return (
@@ -110,7 +125,7 @@ const SeekChart: React.FC<SeekChartProps> = ({ sequence, diskSize }) => {
           );
         })}
 
-        {/* Polyline connecting points in original seek order */}
+        {/* Main path line connecting all seek points in sequence */}
         <polyline
           fill="none"
           stroke="#007bff"
@@ -118,7 +133,7 @@ const SeekChart: React.FC<SeekChartProps> = ({ sequence, diskSize }) => {
           points={points.map((p) => `${p.x},${p.y}`).join(" ")}
         />
 
-        {/* Arrows at each point (except the last one) */}
+        {/* Individual points with arrows and labels */}
         {points.map((point, i) => {
           if (i < points.length - 1) {
             const nextPoint = points[i + 1];
@@ -126,12 +141,12 @@ const SeekChart: React.FC<SeekChartProps> = ({ sequence, diskSize }) => {
             
             return (
               <g key={i}>
-                {/* Arrowhead */}
+                {/* Arrowhead at the destination point */}
                 <polygon
                   points={drawArrowhead(nextPoint.x, nextPoint.y, angle)}
                   fill="#007bff"
                 />
-                {/* Step number label */}
+                {/* Track number label positioned to the right of each point */}
                 <text
                   x={point.x + 8}
                   y={point.y + 4}
@@ -143,7 +158,7 @@ const SeekChart: React.FC<SeekChartProps> = ({ sequence, diskSize }) => {
               </g>
             );
           } else {
-            // Last point - just show the label without arrow
+            // Last point only gets a label (no arrow needed)
             return (
               <text
                 key={i}

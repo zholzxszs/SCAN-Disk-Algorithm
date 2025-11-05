@@ -8,125 +8,181 @@ export interface ScanOutput {
   stepsDetailed: string;
 }
 
+/**
+ * Computes the SCAN (Elevator) disk scheduling algorithm
+ * 
+ * SCAN Algorithm Overview:
+ * - The disk arm starts at the initial head position and moves in one direction (left or right)
+ * - It services all requests in that direction until it reaches the end of the disk
+ * - Then it reverses direction and services requests in the opposite direction
+ * - This creates an "elevator-like" movement pattern
+ * 
+ * @param requests - Array of disk track numbers to be serviced (must be integers ≥ 1)
+ * @param headPos - Initial position of the disk read/write head (non-negative integer)
+ * @param direction - Initial direction of head movement ("right" or "left")
+ * @param maxCylinder - Maximum track number on the disk (disk size - 1)
+ * 
+ * @returns ScanOutput object containing:
+ *   - seekSequence: Array of tracks visited in order
+ *   - totalOverheadMovement: Total distance traveled by disk head
+ *   - stepsExpression: Mathematical expression showing each seek operation
+ *   - stepsValues: Numerical values of each seek distance
+ *   - stepsDetailed: Detailed breakdown of each calculation
+ */
 export function computeSCAN(
   requests: number[],
   headPos: number,
   direction: ScanDirection,
   maxCylinder: number
 ): ScanOutput {
-
-  const left: number[] = [];
-  const right: number[] = [];
-  const visited: number[] = [];
+  // Arrays to hold requests on left and right side of initial head position
+  const left: number[] = [];  // Tracks less than headPos
+  const right: number[] = []; // Tracks greater than headPos
+  const visited: number[] = []; // Tracks visited during seek (excluding initial head)
+  
+  // Array to track each movement step with from, to, and distance
   const stepsTriples: Array<{ from: number; to: number; dist: number }> = [];
 
-  // Sort requests into left and right arrays
+  // Phase 1: Categorize requests into left and right arrays
+  // Note: Requests equal to headPos are ignored since they're already at the head
   for (const track of requests) {
     if (track < headPos) {
-      left.push(track);
+      left.push(track);    // Add to left array if track is less than head position
     } else if (track > headPos) {
-      right.push(track);
+      right.push(track);   // Add to right array if track is greater than head position
     }
+    // If track === headPos, it's already serviced so we skip it
   }
 
-  // Sort left in descending and right in ascending order
-  left.sort((a, b) => b - a);  // Descending for left movement
-  right.sort((a, b) => a - b); // Ascending for right movement
+  // Phase 2: Sort the request arrays for optimal seek order
+  // Left array sorted in descending order (largest to smallest) for efficient left movement
+  left.sort((a, b) => b - a);
+  // Right array sorted in ascending order (smallest to largest) for efficient right movement  
+  right.sort((a, b) => a - b);
 
-  console.log("Left Requests (descending):", left);
-  console.log("Right Requests (ascending):", right);
-  console.log("----------------------------");
+  // Initialize tracking variables
+  let currentPosition = headPos; // Start at initial head position
+  let totalOverheadMovement = 0;         // Accumulator for total seek distance
 
-  let currentPosition = headPos;
-  let totalOverheadMovement = 0;
-
+  // Phase 3: Execute SCAN algorithm based on initial direction
   if (direction === "right") {
-    console.log("Moving RIGHT first...");
-
-    // Move right first
+    // Step 3.1: Service all requests to the RIGHT of initial head position
     for (const track of right) {
       const seekDistance = Math.abs(currentPosition - track);
-      console.log(`Move from ${currentPosition} → ${track} | Distance: ${seekDistance}`);
       totalOverheadMovement += seekDistance;
-      stepsTriples.push({ from: currentPosition, to: track, dist: seekDistance });
-      visited.push(track);
-      currentPosition = track;
+      
+      // Record this movement step
+      stepsTriples.push({ 
+        from: currentPosition, 
+        to: track, 
+        dist: seekDistance 
+      });
+      
+      visited.push(track);           // Add to visited sequence
+      currentPosition = track;       // Update current position
     }
 
-    // Move to the end of disk
+    // Step 3.2: Move to the END OF DISK if not already there
+    // This is the "seek to boundary" characteristic of SCAN
     if (currentPosition !== maxCylinder) {
       const seekDistance = Math.abs(currentPosition - maxCylinder);
-      console.log(`Move to disk end ${maxCylinder} | Distance: ${seekDistance}`);
       totalOverheadMovement += seekDistance;
-      stepsTriples.push({ from: currentPosition, to: maxCylinder, dist: seekDistance });
-      visited.push(maxCylinder);
-      currentPosition = maxCylinder;
+      
+      stepsTriples.push({ 
+        from: currentPosition, 
+        to: maxCylinder, 
+        dist: seekDistance 
+      });
+      
+      visited.push(maxCylinder);     // Add disk end to visited sequence
+      currentPosition = maxCylinder; // Update to disk end position
     }
 
-    // Then move left
-    console.log("Reversing to LEFT...");
+    // Step 3.3: Reverse direction and service all LEFT requests
     for (const track of left) {
       const seekDistance = Math.abs(currentPosition - track);
-      console.log(`Move from ${currentPosition} → ${track} | Distance: ${seekDistance}`);
       totalOverheadMovement += seekDistance;
-      stepsTriples.push({ from: currentPosition, to: track, dist: seekDistance });
-      visited.push(track);
-      currentPosition = track;
+      
+      stepsTriples.push({ 
+        from: currentPosition, 
+        to: track, 
+        dist: seekDistance 
+      });
+      
+      visited.push(track);           // Add to visited sequence
+      currentPosition = track;       // Update current position
     }
   } else {
-    console.log("Moving LEFT first...");
+    // direction === "left" - Same logic but in opposite direction
 
-    // Move left first
+    // Step 3.1: Service all requests to the LEFT of initial head position
     for (const track of left) {
       const seekDistance = Math.abs(currentPosition - track);
-      console.log(`Move from ${currentPosition} → ${track} | Distance: ${seekDistance}`);
       totalOverheadMovement += seekDistance;
-      stepsTriples.push({ from: currentPosition, to: track, dist: seekDistance });
+      
+      stepsTriples.push({ 
+        from: currentPosition, 
+        to: track, 
+        dist: seekDistance 
+      });
+      
       visited.push(track);
       currentPosition = track;
     }
 
-    // Move to the beginning of disk
+    // Step 3.2: Move to the BEGINNING OF DISK (track 0) if not already there
     if (currentPosition !== 0) {
       const seekDistance = Math.abs(currentPosition - 0);
-      console.log(`Move to disk start 0 | Distance: ${seekDistance}`);
       totalOverheadMovement += seekDistance;
-      stepsTriples.push({ from: currentPosition, to: 0, dist: seekDistance });
-      visited.push(0);
-      currentPosition = 0;
+      
+      stepsTriples.push({ 
+        from: currentPosition, 
+        to: 0, 
+        dist: seekDistance 
+      });
+      
+      visited.push(0);               // Add disk start to visited sequence
+      currentPosition = 0;           // Update to disk start position
     }
 
-    // Then move right
-    console.log("Reversing to RIGHT...");
+    // Step 3.3: Reverse direction and service all RIGHT requests
     for (const track of right) {
       const seekDistance = Math.abs(currentPosition - track);
-      console.log(`Move from ${currentPosition} → ${track} | Distance: ${seekDistance}`);
       totalOverheadMovement += seekDistance;
-      stepsTriples.push({ from: currentPosition, to: track, dist: seekDistance });
+      
+      stepsTriples.push({ 
+        from: currentPosition, 
+        to: track, 
+        dist: seekDistance 
+      });
+      
       visited.push(track);
       currentPosition = track;
     }
   }
 
-  // Build step strings
-  const exprParts: string[] = [];
-  const valueParts: string[] = [];
-  const detailedParts: string[] = [];
+  // Phase 4: Format the output with detailed step information
+  const exprParts: string[] = [];    // Mathematical expressions: (large - small)
+  const valueParts: string[] = [];   // Numerical values only
+  const detailedParts: string[] = []; // Complete calculations: (large - small) = value
 
+  // Process each movement step to create different output formats
   for (const { from, to, dist } of stepsTriples) {
-    const large = Math.max(from, to);
-    const small = Math.min(from, to);
-    exprParts.push(`(${large} - ${small})`);
-    valueParts.push(`${dist}`);
-    detailedParts.push(`(${large} - ${small}) = ${dist}`);
+    const large = Math.max(from, to);  // Larger track number
+    const small = Math.min(from, to);  // Smaller track number
+    
+    exprParts.push(`(${large} - ${small})`);           // (199 - 170)
+    valueParts.push(`${dist}`);                        // 29
+    detailedParts.push(`(${large} - ${small}) = ${dist}`); // (199 - 170) = 29
   }
 
+  // Construct final output object
   const output: ScanOutput = {
-    seekSequence: [headPos, ...visited],
-    totalOverheadMovement,
-    stepsExpression: exprParts.join(" + "),
-    stepsValues: valueParts.join(" + "),
-    stepsDetailed: detailedParts.join(" + "),
+    seekSequence: [headPos, ...visited],              // Full path including start position
+    totalOverheadMovement,                                    // Sum of all seek distances
+    stepsExpression: exprParts.join(" + "),           // " (82-50) + (170-82) + ... "
+    stepsValues: valueParts.join(" + "),              // "32 + 88 + ..."
+    stepsDetailed: detailedParts.join(" + "),         // "(82-50)=32 + (170-82)=88 + ..."
   };
 
   return output;
