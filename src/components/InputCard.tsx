@@ -1,3 +1,4 @@
+// InputCard.tsx
 import { useState, type Dispatch, type SetStateAction } from "react";
 
 interface InputCardProps {
@@ -161,23 +162,27 @@ const InputCard = ({
   };
 
   return (
-    <div className="relative max-w-[370px] bg-white shadow-[4px_4px_10px_0px_rgba(0,0,0,0.25)] rounded-[10px] p-6">
+    <div className="relative w-full bg-white/95 backdrop-blur-sm shadow-2xl rounded-2xl p-4 sm:p-6 transform transition-all duration-300 hover:shadow-2xl border border-gray-100">
       {/* Header */}
-      <h2 className="text-2xl font-bold text-black mb-6 font-poppins">Input</h2>
+      <div className="flex items-center gap-3 mb-4 sm:mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 font-poppins bg-gradient-to-r from-green-700 to-green-900 bg-clip-text">
+          Input Parameters
+        </h2>
+      </div>
 
       {/* Algorithm display (read-only) */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-black mb-1 font-poppins">
+      <div className="mb-4 transform transition-all duration-200 hover:scale-[1.02]">
+        <label className="block text-sm font-semibold text-gray-700 mb-2 font-poppins">
           Algorithm
         </label>
-        <div className="w-full border border-neutral-400 rounded-md px-3 py-2 text-sm font-poppins bg-neutral-100 text-neutral-600">
-          SCAN
+        <div className="w-full border-2 border-green-200 rounded-xl px-4 py-3 text-sm font-poppins bg-gradient-to-r from-green-50 to-emerald-50 text-green-800 font-medium shadow-inner">
+          SCAN (Elevator Algorithm)
         </div>
       </div>
 
       {/* Work Queue input - optional field for disk requests */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-black mb-1 font-poppins">
+      <div className="mb-4 transform transition-all duration-200 hover:scale-[1.02]">
+        <label className="block text-sm font-semibold text-gray-700 mb-2 font-poppins">
           Work Queue (separated by spaces)
         </label>
         <input
@@ -185,20 +190,20 @@ const InputCard = ({
           value={requests}
           onChange={handleInputChange(setRequests, "requests")}
           placeholder="e.g. 82 170 43 140 24 16 190"
-          className={`w-full border rounded-md px-3 py-2 text-sm font-poppins focus:outline-none focus:ring-2 ${
+          className={`w-full border-2 rounded-xl px-4 py-3 text-sm font-poppins focus:outline-none focus:ring-4 transition-all duration-200 ${
             errors.requests 
-              ? "border-red-500 focus:ring-red-500" 
-              : "border-neutral-400 focus:ring-green-700"
-          }`}
+              ? "border-red-400 focus:ring-red-200 focus:border-red-500" 
+              : "border-green-200 focus:ring-green-200 focus:border-green-500"
+          } bg-white/80 backdrop-blur-sm`}
         />
         {errors.requests && (
-          <p className="text-red-500 text-xs mt-1 font-poppins">{errors.requests}</p>
+          <p className="text-red-500 text-xs mt-2 font-poppins animate-pulse">{errors.requests}</p>
         )}
       </div>
 
       {/* Initial Head Position input - required field */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-black mb-1 font-poppins">
+      <div className="mb-4 transform transition-all duration-200 hover:scale-[1.02]">
+        <label className="block text-sm font-semibold text-gray-700 mb-2 font-poppins">
           Initial Head Position <span className="text-red-500 font-bold">*</span>
         </label>
         <input
@@ -208,26 +213,26 @@ const InputCard = ({
           placeholder="e.g. 50"
           min="0"
           step="1"
-          className={`w-full border rounded-md px-3 py-2 text-sm font-poppins focus:outline-none focus:ring-2 ${
+          className={`w-full border-2 rounded-xl px-4 py-3 text-sm font-poppins focus:outline-none focus:ring-4 transition-all duration-200 ${
             errors.head 
-              ? "border-red-500 focus:ring-red-500" 
-              : "border-neutral-400 focus:ring-green-700"
-          }`}
+              ? "border-red-400 focus:ring-red-200 focus:border-red-500" 
+              : "border-green-200 focus:ring-green-200 focus:border-green-500"
+          } bg-white/80 backdrop-blur-sm`}
         />
         {errors.head && (
-          <p className="text-red-500 text-xs mt-1 font-poppins">{errors.head}</p>
+          <p className="text-red-500 text-xs mt-2 font-poppins animate-pulse">{errors.head}</p>
         )}
       </div>
 
       {/* Direction selection - determines initial head movement direction */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-black mb-1 font-poppins">
+      <div className="mb-4 transform transition-all duration-200 hover:scale-[1.02]">
+        <label className="block text-sm font-semibold text-gray-700 mb-2 font-poppins">
           Direction
         </label>
         <select
           value={direction}
           onChange={(e) => setDirection(e.target.value)}
-          className="w-full border border-neutral-400 rounded-md px-3 py-2 text-sm font-poppins focus:outline-none focus:ring-2 focus:ring-green-700"
+          className="w-full border-2 border-green-200 rounded-xl px-4 py-3 text-sm font-poppins focus:outline-none focus:ring-4 focus:ring-green-200 focus:border-green-500 transition-all duration-200 bg-white/80 backdrop-blur-sm"
         >
           <option value="right">Right (towards the larger value)</option>
           <option value="left">Left (towards the smaller value)</option>
@@ -235,8 +240,8 @@ const InputCard = ({
       </div>
 
       {/* Disk Size input - required field defining disk boundaries */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-black mb-1 font-poppins">
+      <div className="mb-6 transform transition-all duration-200 hover:scale-[1.02]">
+        <label className="block text-sm font-semibold text-gray-700 mb-2 font-poppins">
           Disk Size (Max Track Number) <span className="text-red-500 font-bold">*</span>
         </label>
         <input
@@ -246,30 +251,36 @@ const InputCard = ({
           placeholder="e.g. 199"
           min="1"
           step="1"
-          className={`w-full border rounded-md px-3 py-2 text-sm font-poppins focus:outline-none focus:ring-2 ${
+          className={`w-full border-2 rounded-xl px-4 py-3 text-sm font-poppins focus:outline-none focus:ring-4 transition-all duration-200 ${
             errors.diskSize 
-              ? "border-red-500 focus:ring-red-500" 
-              : "border-neutral-400 focus:ring-green-700"
-          }`}
+              ? "border-red-400 focus:ring-red-200 focus:border-red-500" 
+              : "border-green-200 focus:ring-green-200 focus:border-green-500"
+          } bg-white/80 backdrop-blur-sm`}
         />
         {errors.diskSize && (
-          <p className="text-red-500 text-xs mt-1 font-poppins">{errors.diskSize}</p>
+          <p className="text-red-500 text-xs mt-2 font-poppins animate-pulse">{errors.diskSize}</p>
         )}
       </div>
 
       {/* Action buttons */}
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-3">
         <button
           type="button"
           onClick={generateRandomValues}
-          className="flex-1 bg-blue-600 cursor-pointer hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition-colors font-poppins text-base"
+          className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 cursor-pointer hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg font-poppins text-sm sm:text-base flex items-center justify-center gap-2 group"
         >
+          <svg className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
           GENERATE
         </button>
         <button
           onClick={handleSolve}
-          className="flex-1 bg-green-700 cursor-pointer hover:bg-green-800 text-white font-bold py-2 rounded-lg transition-colors font-poppins text-base"
+          className="flex-1 bg-gradient-to-r from-green-600 to-green-700 cursor-pointer hover:from-green-700 hover:to-green-800 text-white font-bold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg font-poppins text-sm sm:text-base flex items-center justify-center gap-2 group"
         >
+          <svg className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
           SOLVE
         </button>
       </div>
