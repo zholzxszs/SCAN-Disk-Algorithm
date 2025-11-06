@@ -92,6 +92,13 @@ const DiskScheduling: React.FC = () => {
       {showInfo && (
         <div className="w-full bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-inner animate-slideDown">
           <div className="w-full max-w-7xl mx-auto px-4 py-6">
+            {/* 2-Sentence Description */}
+            <div className="mb-6">
+              <p className="text-sm text-gray-700 font-poppins leading-relaxed">
+                The <span className="bg-gradient-to-r from-green-700 via-blue-700 to-purple-700 bg-clip-text text-transparent font-bold">SCAN algorithm</span>, also known as the <span className="bg-gradient-to-r from-green-700 via-blue-700 to-purple-700 bg-clip-text text-transparent font-bold">elevator algorithm</span>, moves the disk arm in one direction servicing all requests until it reaches the end, then reverses direction. This creates an efficient back-and-forth motion similar to an elevator, minimizing seek time and preventing starvation. The algorithm ensures fairness by servicing requests in both directions and guarantees that all requests will eventually be processed. It strikes an optimal balance between performance and fairness, making it widely adopted in modern operating systems for disk scheduling.
+              </p>
+            </div>
+            
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <h3 className="text-xl font-bold font-poppins text-gray-800 flex items-center gap-2">
