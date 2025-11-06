@@ -162,7 +162,7 @@ const InputCard = ({
   };
 
   return (
-    <div className="relative w-full bg-white/95 backdrop-blur-sm shadow-2xl rounded-2xl p-4 sm:p-6 transform transition-all duration-300 hover:shadow-2xl border border-gray-100">
+    <div className="relative w-full bg-white/95 backdrop-blur-sm rounded-2xl shadow-md hover:shadow-lg p-4 sm:p-6 transform transition-all duration-300 border border-gray-100">
       {/* Header */}
       <div className="flex items-center gap-3 mb-4 sm:mb-6">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800 font-poppins bg-gradient-to-r from-green-700 to-green-900 bg-clip-text">
