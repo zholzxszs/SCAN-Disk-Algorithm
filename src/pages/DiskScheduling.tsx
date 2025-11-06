@@ -1,23 +1,17 @@
-// DiskScheduling.tsx
+// DiskScheduling.tsx - OPTIMIZED VERSION
 import type React from "react";
 import { useState, useEffect } from "react";
 import InputCard from "@/components/InputCard";
 import OutputCard from "@/components/OutputCard";
 import { computeSCAN } from "@/algorithms/scan";
 
-/**
- * Main component for the SCAN Disk Scheduling Algorithm simulator
- * Orchestrates the input processing, algorithm execution, and result display
- */
 const DiskScheduling: React.FC = () => {
-  // State for storing algorithm results
   const [output, setOutput] = useState<{
     seekSequence: number[];
     totalOverheadMovement: number;
     steps: string;
   } | null>(null);
 
-  // State for user inputs
   const [requests, setRequests] = useState<string>("");
   const [head, setHead] = useState<string>("");
   const [direction, setDirection] = useState<string>("right");
@@ -33,7 +27,7 @@ const DiskScheduling: React.FC = () => {
   }, [requests, head, diskSize]);
 
   /**
-   * Handles the solve button click - processes inputs and executes SCAN algorithm
+   * Handles the solve button click
    */
   const handleSolve = () => {
     const reqs = requests
@@ -64,7 +58,7 @@ const DiskScheduling: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="w-full bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm">
+      <header className="w-full bg-white border-b border-gray-200 shadow-sm">
         <div className="w-full max-w-7xl mx-auto px-4 py-6">
           <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
             <div className="text-center lg:text-left">
@@ -77,7 +71,7 @@ const DiskScheduling: React.FC = () => {
             </div>
             <button
               onClick={() => setShowInfo(!showInfo)}
-              className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-poppins font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-2"
+              className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-poppins font-semibold rounded-xl transition-colors duration-200 flex items-center gap-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -90,18 +84,17 @@ const DiskScheduling: React.FC = () => {
 
       {/* Algorithm Information Panel */}
       {showInfo && (
-        <div className="w-full bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-inner animate-slideDown">
+        <div className="w-full bg-white border-b border-gray-200 shadow-inner">
           <div className="w-full max-w-7xl mx-auto px-4 py-6">
-            {/* 2-Sentence Description */}
             <div className="mb-6">
               <p className="text-sm text-gray-700 font-poppins leading-relaxed">
-                The <span className="bg-gradient-to-r from-green-700 via-blue-700 to-purple-700 bg-clip-text text-transparent font-bold">SCAN algorithm</span>, also known as the <span className="bg-gradient-to-r from-green-700 via-blue-700 to-purple-700 bg-clip-text text-transparent font-bold">elevator algorithm</span>, moves the disk arm in one direction servicing all requests until it reaches the end, then reverses direction. This creates an efficient back-and-forth motion similar to an elevator, minimizing seek time and preventing starvation. The algorithm ensures fairness by servicing requests in both directions and guarantees that all requests will eventually be processed. It strikes an optimal balance between performance and fairness, making it widely adopted in modern operating systems for disk scheduling.
+                The <span className="bg-gradient-to-r from-green-700 via-blue-700 to-purple-700 bg-clip-text text-transparent font-bold">SCAN algorithm</span>, also known as the <span className="bg-gradient-to-r from-green-700 via-blue-700 to-purple-700 bg-clip-text text-transparent font-bold">elevator algorithm</span>, moves the disk arm in one direction servicing all requests until it reaches the end, then reverses direction. This creates an efficient back-and-forth motion similar to an elevator, minimizing seek time and preventing starvation.
               </p>
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="space-y-4">
-                <h3 className="text-xl font-bold font-poppins text-gray-800 flex items-center gap-2">
+                <h3 className="text-xl font-bold font-poppins text-gray-800">
                   How SCAN Algorithm Works
                 </h3>
                 <div className="space-y-3 text-sm text-gray-700 font-poppins">
@@ -117,14 +110,10 @@ const DiskScheduling: React.FC = () => {
                     <span className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></span>
                     <span><strong>Boundary Reach:</strong> Always moves to the disk boundary (0 or max track) before reversing direction.</span>
                   </p>
-                  <p className="flex items-start gap-2">
-                    <span className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0"></span>
-                    <span><strong>Starvation-free:</strong> Ensures all requests are serviced eventually, preventing starvation.</span>
-                  </p>
                 </div>
               </div>
               <div className="space-y-4">
-                <h3 className="text-xl font-bold font-poppins text-gray-800 flex items-center gap-2">
+                <h3 className="text-xl font-bold font-poppins text-gray-800">
                   Key Characteristics
                 </h3>
                 <div className="space-y-3 text-sm text-gray-700 font-poppins">
@@ -140,10 +129,6 @@ const DiskScheduling: React.FC = () => {
                     <span className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></span>
                     <span><strong>Fairness:</strong> Provides better response times for requests in the middle of the disk.</span>
                   </p>
-                  <p className="flex items-start gap-2">
-                    <span className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0"></span>
-                    <span><strong>Real-world Use:</strong> Commonly used in modern operating systems and database management.</span>
-                  </p>
                 </div>
               </div>
             </div>
@@ -156,7 +141,7 @@ const DiskScheduling: React.FC = () => {
         <div className="w-full max-w-7xl mx-auto">
           <div className="flex flex-col xl:flex-row gap-6 lg:gap-8 xl:gap-10">
             {/* Input Panel */}
-            <div className="w-full xl:w-[400px] xl:flex-shrink-0 animate-fadeInLeft">
+            <div className="w-full xl:w-[400px] xl:flex-shrink-0">
               <InputCard
                 requests={requests}
                 setRequests={setRequests}
@@ -171,7 +156,7 @@ const DiskScheduling: React.FC = () => {
             </div>
             
             {/* Output Panel */}
-            <div className="flex-1 min-w-0 animate-fadeInRight">
+            <div className="flex-1 min-w-0">
               <OutputCard 
                 output={output} 
                 diskSize={parseInt(diskSize) || 199} 
@@ -185,14 +170,15 @@ const DiskScheduling: React.FC = () => {
 
       {/* Footer */}
       <footer className="w-full flex justify-center mt-auto py-6">
-        <div className="w-full max-w-4xl bg-gradient-to-r from-green-800 to-blue-900 text-white py-4 px-6 text-center text-xs sm:text-sm rounded-2xl shadow-2xl backdrop-blur-sm">
+        <div className="w-full max-w-4xl bg-gradient-to-r from-green-800 to-blue-900 text-white py-4 px-6 text-center text-xs sm:text-sm rounded-2xl shadow-lg">
           <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4">
             <span className="font-poppins">© 2025–2026 College of Computer Science, DMMMSU–SLUC.</span>
             <span className="hidden sm:block">|</span>
             <a 
               href="https://github.com/zholzxszs/SCAN-Disk-Algorithm" 
               target="_blank" 
-              className="text-white/90 hover:text-white hover:underline hover:decoration-white transition-all duration-300 font-poppins flex items-center gap-1"
+              rel="noopener noreferrer"
+              className="text-white/90 hover:text-white hover:underline transition-colors duration-200 font-poppins flex items-center gap-1"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
