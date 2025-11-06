@@ -121,29 +121,27 @@ const InputCard = ({
    * Auto-generate test values
    */
   const generateRandomValues = () => {
+    // Generate random disk size between 100–300
     const randomDiskSize = Math.floor(Math.random() * 201) + 100;
     setDiskSize(randomDiskSize.toString());
-    
+
+    // Generate random head position within disk range
     const randomHead = Math.floor(Math.random() * (randomDiskSize + 1));
     setHead(randomHead.toString());
-    
+
+    // Generate a *random number* of requests (between 4 and 10)
+    const numberOfRequests = Math.floor(Math.random() * 7) + 4; // 4–10 requests
     const randomRequests: number[] = [];
-    
-    for (let i = 0; i < 5; i++) {
-      const randomRequest = Math.floor(Math.random() * randomDiskSize) + 1;
-      randomRequests.push(randomRequest);
-    }
-    
-    let uniqueRequests = Array.from(new Set(randomRequests));
-    
-    while (uniqueRequests.length < 5) {
-      const additionalRequest = Math.floor(Math.random() * randomDiskSize) + 1;
-      if (!uniqueRequests.includes(additionalRequest)) {
-        uniqueRequests.push(additionalRequest);
+
+    // Generate random unique requests within disk size
+    while (randomRequests.length < numberOfRequests) {
+      const randomRequest = Math.floor(Math.random() * (randomDiskSize + 1));
+      if (!randomRequests.includes(randomRequest)) {
+        randomRequests.push(randomRequest);
       }
     }
-    
-    setRequests(uniqueRequests.join(" "));
+
+    setRequests(randomRequests.join(" "));
     setErrors({ head: "", diskSize: "", requests: "" });
   };
 
